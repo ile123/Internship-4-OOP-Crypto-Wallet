@@ -28,6 +28,11 @@ public abstract class Asset
         return Name;
     }
 
+    public Guid GetAddress()
+    {
+        return _address;
+    }
+
     public decimal GetValue()
     {
         return Value;
