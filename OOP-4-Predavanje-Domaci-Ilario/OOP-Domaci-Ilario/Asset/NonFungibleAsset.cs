@@ -2,14 +2,14 @@ namespace OOP_Domaci_Ilario.Asset;
 
 public sealed class NonFungibleAsset : Asset
 {
-    private readonly Guid _nonFungibleAssetAdress;
-    public NonFungibleAsset(string name, decimal value) : base(name, value)
+    private readonly Guid _supportedFungibleAssetAddress;
+    public NonFungibleAsset(string name, decimal value, Guid supportedFungibleAssetAddress) : base(name, value)
     {
-        _nonFungibleAssetAdress = Guid.NewGuid();
+        _supportedFungibleAssetAddress = supportedFungibleAssetAddress;
     }
 
-    public Guid GetNonFungibleAsset()
+    public Guid GetFungibleAssetAddress()
     {
-        return _nonFungibleAssetAdress;
+        return _supportedFungibleAssetAddress;
     }
 }

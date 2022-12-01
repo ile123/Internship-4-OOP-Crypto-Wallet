@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
+﻿
 using OOP_Domaci_Ilario.Asset;
 using OOP_Domaci_Ilario.Transaction;
 using OOP_Domaci_Ilario.Wallet;
@@ -29,33 +28,128 @@ var assets = new List<Asset>()
     new FungibleAsset("Dogecoin", 0.1026m,"DOGE"),
     new FungibleAsset("Cardano", 0.3135m,"ADA"),
     new FungibleAsset("Polygon", 0.8834m,"MATIC"),
-    new NonFungibleAsset("CryptoPunks", 77810.40m),
-    new NonFungibleAsset("Pre-Process", 7041.84m),
-    new NonFungibleAsset("Mutant Ape Yacht Club", 17183.13m),
-    new NonFungibleAsset("CLONE X", 11412.19m),
-    new NonFungibleAsset("KILLABEARS", 3618.18m),
-    new NonFungibleAsset("The Memes", 337.18m),
-    new NonFungibleAsset("ENS", 12.97m),
-    new NonFungibleAsset("Friendship Bracelets", 337.18m),
-    new NonFungibleAsset("Otherdeed for Otherside", 1.31m),
-    new NonFungibleAsset("Dreamy", 51.87m),
-    new NonFungibleAsset("Azuki", 13811.35m),
-    new NonFungibleAsset("CryptoDucks", 51.87m),
-    new NonFungibleAsset("HELIX", 1089.35m),
-    new NonFungibleAsset("Valhalla", 907.79m),
-    new NonFungibleAsset("Genuine Undead", 778.10m),
-    new NonFungibleAsset("Bored Ape Yacht Club", 90052.57m),
-    new NonFungibleAsset("Pudgy Penguins", 4149.89m),
-    new NonFungibleAsset("DEGEN TOONZ", 778.10m),
-    new NonFungibleAsset("1337 skulls", 194.53m),
-    new NonFungibleAsset("Bruh Pills", 103.75m),
 };
 
 var transactions = new Lazy<Transaction>();
 
-void Start()
+void PrintMenu()
 {
+    Console.Clear();
+    Console.WriteLine("\n 1 - Create wallet \n 2 - Access wallet \n 3 - Exit app \n \n Enter one of the specified values");
+}
+
+void CreateNewWallet()
+{
+    Console.Clear();
+    while (true)
+    {
+        Console.WriteLine("We will now create a new wallet, please enter one of the following numbers: \n 1 - Bitcoin \n 2 - Ethereum \n 3 - Solana \n");
+        var flag = false;
+        var input = Console.ReadLine();
+        switch (input)
+        {
+            case "1":
+                flag = true;
+                wallets.Add(new BitcoinWallet());
+                break;
+            case "2":
+                flag = true;
+                wallets.Add(new EthereumWallet());
+                break;
+            case "3":
+                flag = true;
+                wallets.Add(new SolanaWallet());
+                break;
+            default:
+                Console.WriteLine("ERROR: Invalid argument was given! Try Again! \n");
+                Thread.Sleep(2000);
+                Console.Clear();
+                break;
+        }
+
+        if (flag is true)
+        {
+            break;
+        }
+    }
+    Console.Clear();
+}
+
+void PrintAllWallets()
+{
+    Console.WriteLine("\n \n All currently existing wallets: \n \n");
+    foreach (var item in wallets)
+    {
+        Console.WriteLine(item.GetAddress());
+    }
+}
+
+void AccessWallet()
+{
+    Console.Clear();
     
 }
 
+void AppendNonFungibleAssets()
+{
+    var assetAddress = assets[1].GetAddress();
+    var nonFungibleAssets = new List<Asset>()
+    {
+        new NonFungibleAsset("KILLABEARS", 2.99m, assetAddress),
+        new NonFungibleAsset("1337 skulls", 0.23m, assetAddress),
+        new NonFungibleAsset("The Memes", 0.25m, assetAddress),
+        new NonFungibleAsset("Mutant Ape Yacht Club", 13.07m, assetAddress),
+        new NonFungibleAsset("Bored Ape Yacht Club", 68.97m, assetAddress),
+        new NonFungibleAsset("DEGEN TOONZ COLLECTION", 0.72m, assetAddress),
+        new NonFungibleAsset("CLONE X", 8.60m, assetAddress),
+        new NonFungibleAsset("ENS", 0.01m, assetAddress),
+        new NonFungibleAsset("RarePass", 35m, assetAddress),
+        new NonFungibleAsset("Pre-Process", 7.50m, assetAddress),
+        new NonFungibleAsset("Otherdeed for Otherside", 1.32m, assetAddress),
+        new NonFungibleAsset("Abstraction", 0.40m, assetAddress),
+        new NonFungibleAsset("LuppyClubOfficial", 1m, assetAddress),
+        new NonFungibleAsset("Valhalla", 0.77m, assetAddress),
+        new NonFungibleAsset("The Sandbox", 1.09m, assetAddress),
+        new NonFungibleAsset("Pudgy Penguins", 3.33m, assetAddress),
+        new NonFungibleAsset("Dabloons Adventure", 0.05m, assetAddress),
+        new NonFungibleAsset("Azuki", 10.50m, assetAddress),
+        new NonFungibleAsset("HELIX", 0.77m, assetAddress),
+        new NonFungibleAsset("Rug Radio", 0.51m, assetAddress)
+    };
+    assets.AddRange(nonFungibleAssets);
+}
+
+void Start()
+{
+    var flag = false;
+    while (true)
+    {
+        PrintMenu();
+        var input = Console.ReadLine();
+        switch (input)
+        {
+            case "1":
+                CreateNewWallet();
+                break;
+            case "2":
+                AccessWallet();
+                break;
+            case "3":
+                flag = true;
+                break;
+            default:
+                Console.WriteLine("\n ERROR: Wrong input was given! \n");
+                Thread.Sleep(2000);
+                break;
+        }
+
+        if (flag is true)
+        {
+            Console.WriteLine("\n \n Exiting app! \n \n");
+            break;
+        }
+    }
+}
+
+AppendNonFungibleAssets();
 Start();

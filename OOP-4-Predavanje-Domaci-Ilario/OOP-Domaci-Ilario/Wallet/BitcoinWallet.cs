@@ -2,14 +2,18 @@ namespace OOP_Domaci_Ilario.Wallet;
 
 public sealed class BitcoinWallet : Wallet
 {
-    private readonly List<Guid> _supportedFungibleAssets;
-    public BitcoinWallet()
-    {
-        _supportedFungibleAssets = new List<Guid>();
-    }
 
-    public List<Guid> GetAssets()
+    private decimal CalculateTotalValueOfAssets()
     {
-        return _supportedFungibleAssets;
+        var total = 0m;
+        var assetValue = 0m;
+        foreach (var item in GetFungibleAssetsBalance())
+        {
+            
+        }
+
+        return total;
     }
+    
+    
 }
