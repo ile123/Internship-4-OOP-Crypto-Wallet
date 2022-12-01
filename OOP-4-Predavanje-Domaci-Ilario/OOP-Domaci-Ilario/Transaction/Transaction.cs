@@ -7,8 +7,39 @@ public abstract class Transaction
     private readonly DateTime _transactionDate;
     private readonly Guid _senderWallet;
     private readonly Guid _receiverWallet;
-    private bool _isCalled;
+    private bool _isCancelled;
 
+    public Guid Id
+    {
+        get { return _id; }
+    }
+
+    public Guid Asset
+    {
+        get { return _assetAddress; }
+    }
+
+    public DateTime TransactionDate
+    {
+        get { return _transactionDate; }
+    }
+
+    public Guid Sender
+    {
+        get { return _senderWallet; }
+    }
+
+    public Guid Receiver
+    {
+        get { return _receiverWallet; }
+    }
+
+    public bool IsCancelled
+    {
+        get { return _isCancelled; }
+        set { _isCancelled = value; }
+    }
+    
     protected Transaction(Guid assetAddress, Guid senderWallet, Guid receiverWallet)
     {
         _id = Guid.NewGuid();
@@ -16,41 +47,6 @@ public abstract class Transaction
         _transactionDate = DateTime.Now;
         _senderWallet = senderWallet;
         _receiverWallet = receiverWallet;
-        _isCalled = false;
-    }
-
-    public Guid GetTransactionId()
-    {
-        return _id;
-    }
-
-    public Guid GetAssetAddress()
-    {
-        return _assetAddress;
-    }
-
-    public DateTime GetTransactionDate()
-    {
-        return _transactionDate;
-    }
-
-    public Guid GetSenderWallet()
-    {
-        return _senderWallet;
-    }
-
-    public Guid GetReceiverWallet()
-    {
-        return _receiverWallet;
-    }
-
-    public bool GetIsCalled()
-    {
-        return _isCalled;
-    }
-
-    public void SetIsCalled(bool newBool)
-    {
-        _isCalled = newBool;
+        _isCancelled = false;
     }
 }

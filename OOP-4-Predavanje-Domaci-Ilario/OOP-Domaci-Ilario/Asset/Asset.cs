@@ -3,8 +3,25 @@ namespace OOP_Domaci_Ilario.Asset;
 public abstract class Asset
 {
     private readonly Guid _address;
-    private string Name { get; set; }
-    private decimal Value { get; set; }
+    private string _name;
+    private decimal _value;
+
+    public Guid Address
+    {
+        get { return _address; }
+    }
+
+    public string Name
+    {
+        get { return _name; }
+        set { _name = value; }
+    }
+
+    public decimal Value
+    {
+        get { return _value; }
+        set { _value = value; }
+    }
 
     public void SetName(string name)
     {
@@ -19,8 +36,8 @@ public abstract class Asset
     protected Asset(string name, decimal value)
     {
         _address = Guid.NewGuid();
-        Name = name;
-        Value = value;
+        _name = name;
+        _value = value;
     }
 
     public string GetName()

@@ -80,7 +80,7 @@ void PrintAllWallets()
     Console.WriteLine("\n \n All currently existing wallets: \n \n");
     foreach (var item in wallets)
     {
-        Console.WriteLine(item.GetAddress());
+        Console.WriteLine(item.Address);
     }
 }
 

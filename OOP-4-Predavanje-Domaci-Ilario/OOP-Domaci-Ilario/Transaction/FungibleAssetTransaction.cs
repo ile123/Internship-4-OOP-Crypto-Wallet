@@ -4,15 +4,40 @@ namespace OOP_Domaci_Ilario.Transaction;
 
 public sealed class FungibleAssetTransaction : Transaction
 {
-    private decimal BeggingBalanceOfSenderWallet { get; }
-    private decimal FinalBalanceOfSenderWallet { get; }
-    private decimal BeggingBalanceOfReceiverWallet { get; }
-    private decimal FinalBalanceOfReceiverWallet { get; }
+    private decimal _beggingBalanceOfSenderWallet;
+    private decimal _finalBalanceOfSenderWallet;
+    private decimal _beggingBalanceOfReceiverWallet;
+    private decimal _finalBalanceOfReceiverWallet;
+
+    public decimal BeggingSenderBalance
+    {
+        get { return _beggingBalanceOfSenderWallet; }
+        set { _beggingBalanceOfSenderWallet = value; }
+    }
+
+    public decimal FinalSenderBalance
+    {
+        get { return _finalBalanceOfSenderWallet; }
+        set { _finalBalanceOfSenderWallet = value; }
+    }
+
+    public decimal BeggingReceiverBalance
+    {
+        get { return _beggingBalanceOfReceiverWallet; }
+        set { _beggingBalanceOfReceiverWallet = value; }
+    }
+
+    public decimal FinalReceiverBalance
+    {
+        get { return _finalBalanceOfReceiverWallet; }
+        set { _finalBalanceOfReceiverWallet = value; }
+    }
+    
     public FungibleAssetTransaction(Guid assetAddress, Guid senderWallet, Guid receiverWallet, decimal beggingBalanceSender, decimal finalBalanceSender, decimal beggingBalanceReceiver, decimal finalBalanceReceiver) : base(assetAddress, senderWallet, receiverWallet)
     {
-        BeggingBalanceOfSenderWallet = beggingBalanceSender;
-        FinalBalanceOfSenderWallet = finalBalanceReceiver;
-        BeggingBalanceOfReceiverWallet = beggingBalanceReceiver;
-        FinalBalanceOfReceiverWallet = finalBalanceReceiver;
+        _beggingBalanceOfSenderWallet = beggingBalanceSender;
+        _finalBalanceOfSenderWallet = finalBalanceReceiver;
+        _beggingBalanceOfReceiverWallet = beggingBalanceReceiver;
+        _finalBalanceOfReceiverWallet = finalBalanceReceiver;
     }
 }
