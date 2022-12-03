@@ -49,4 +49,5 @@ public abstract class Transaction
         _receiverWallet = receiverWallet;
         _isCancelled = false;
     }
+    
 }

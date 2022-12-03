@@ -1,17 +1,22 @@
+using OOP_Domaci_Ilario.Interfaces;
+
 namespace OOP_Domaci_Ilario.Wallet;
 
 using OOP_Domaci_Ilario.Asset;
+using OOP_Domaci_Ilario.Transaction;
 
-public sealed class BitcoinWallet : Wallet
+public sealed class BitcoinWallet : Wallet, IFungible
 {
-
-    private decimal CalculateTotalValueOfAssets(List<Asset> assets)
+    public decimal ReturnTotalValueOfFungibleAssets(List<Asset> assets)
     {
         var total = Decimal.Zero;
-        var assetValue = Decimal.Zero;
+        if (assets.Count is 0)
+        {
+            return 0m;
+        }
         foreach (var item in base.FungibleAssetsBalance)
         {
-            assetValue = assets.Find(x => x.GetAddress().Equals(item.Address)).GetValue();
+            var assetValue = assets.Find(x => x.Address.Equals(item.Address)).Value;
             if (assetValue is not 0m)
             {
                 total += assetValue * item.Balance;
@@ -20,8 +25,49 @@ public sealed class BitcoinWallet : Wallet
         return total;
     }
 
-    public override string PrintWallet(List<Asset> assets)
+    private static int ReturnPercentageChangeInAllAssets(List<(Guid address, DateTime date, decimal value)> fungibleAssetPriceHistory)
     {
-        return $"Bitcoin - {base.Address} - {CalculateTotalValueOfAssets(assets)} - ";
+        return 0;
+    }
+
+    public override void PrintWallet(List<Asset> assets, List<(Guid address, DateTime date, decimal value)> fungibleAssetPriceHistory)
+    {
+        Console.WriteLine($"\n Type: Bitcoin \t Address: {base.Address} \n");
+        var totalValueOfAssets = ReturnTotalValueOfFungibleAssets(assets);
+        Console.WriteLine(totalValueOfAssets is 0m
+            ? "Total value of all assets: 0$ \n"
+            : $"Total value of all assets: {totalValueOfAssets}\n");
+        if (assets.Count is 0)
+        {
+            Console.WriteLine("Wallet dose not have any assets\n");
+        }
+        else
+        {
+            Console.WriteLine("Assets that the wallet has: \n");
+            foreach (var item in assets)
+            {
+                Console.WriteLine(item.Name);
+            }
+        }
+        Console.WriteLine("Implement later\n");
+        //dodaj kasnijek kada skuzis kako
+        /*
+        else
+        {
+            foreach (var item in assets)
+            {
+                var lastRecord = assets.Where(x => x.Address.Equals(item.Address)).ToList().OrderBy(x => x.Value)
+                    .Last();
+                var firstNumber = Decimal.ToInt32(lastRecord.Value);
+                var secondNumber = Decimal.ToInt32(item.Value);
+                if (firstNumber > secondNumber)
+                {
+                    percentage = firstNumber - secondNumber;
+                    percentage %= firstNumber * 100;
+                    Console.WriteLine("Vale");
+                }
+            }
+        }
+        */
     }
 }

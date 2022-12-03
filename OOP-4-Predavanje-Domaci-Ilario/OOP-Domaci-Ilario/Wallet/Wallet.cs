@@ -1,6 +1,7 @@
 namespace OOP_Domaci_Ilario.Wallet;
 
 using OOP_Domaci_Ilario.Asset;
+using OOP_Domaci_Ilario.Transaction;
 public abstract class Wallet
 {
     private readonly Guid _address;
@@ -36,6 +37,19 @@ public abstract class Wallet
         _transactionAddresses = new List<Guid>();
     }
 
-    public abstract string PrintWallet(List<Asset> assets);
+    public abstract void PrintWallet(List<Asset> assets, List<(Guid address, DateTime date, decimal value)> fungibleAssetPriceHistory);
 
+    /*
+    public Transaction? GetLastTransactionRelatedToAsset(List<Transaction> transactions, Guid assetAddress)
+    {
+        if (transactions.Count is 0)
+        {
+            return null;
+        }
+
+        var filteredTransactions = TransactionAddresses.Select(item => transactions.Find(x => x.Id.Equals(item))).ToList();
+
+        return filteredTransactions.OrderBy(x => x?.TransactionDate).Last();
+    }
+    */
 }

@@ -23,35 +23,11 @@ public abstract class Asset
         set { _value = value; }
     }
 
-    public void SetName(string name)
-    {
-        Name = name;
-    }
-
-    public void SetValue(decimal value)
-    {
-        Value = value;
-    }
-
     protected Asset(string name, decimal value)
     {
         _address = Guid.NewGuid();
         _name = name;
         _value = value;
     }
-
-    public string GetName()
-    {
-        return Name;
-    }
-
-    public Guid GetAddress()
-    {
-        return _address;
-    }
-
-    public decimal GetValue()
-    {
-        return Value;
-    }
+    
 }

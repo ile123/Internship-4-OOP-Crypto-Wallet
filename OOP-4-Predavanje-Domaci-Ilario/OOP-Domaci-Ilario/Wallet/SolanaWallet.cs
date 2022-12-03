@@ -1,21 +1,31 @@
+using OOP_Domaci_Ilario.Interfaces;
+
 namespace OOP_Domaci_Ilario.Wallet;
 
-public sealed class SolanaWallet : Wallet
-{
-    private readonly List<Guid> _addressesOfOwnedNonFungibleAssets;
+using OOP_Domaci_Ilario.Asset;
+using OOP_Domaci_Ilario.Transaction;
 
-    public List<Guid> OwnedNonFungibleAssets
-    {
-        get { return _addressesOfOwnedNonFungibleAssets;  }
-    }
+public sealed class SolanaWallet : Wallet, IFungible, INonFungible
+{
+    public List<Guid> AddressesOfOwnedNonFungibleAssets { get; set; }
 
     public SolanaWallet()
     {
-        _addressesOfOwnedNonFungibleAssets = new List<Guid>();
+        AddressesOfOwnedNonFungibleAssets = new List<Guid>();
     }
 
-    public override string PrintWallet(List<Asset.Asset> assets)
+    public override void PrintWallet(List<Asset> assets, List<(Guid address, DateTime date, decimal value)> fungibleAssetPriceHistory)
     {
-        return $"";
+        
+    }
+    
+    public decimal ReturnTotalValueOfFungibleAssets(List<Asset> assets)
+    {
+        return 0m;
+    }
+
+    public decimal ReturnTotalValueOfNonFungibleAssets(List<Asset> assets)
+    {
+        return 0m;
     }
 }
