@@ -2,41 +2,56 @@ using OOP_Domaci_Ilario.Interfaces;
 
 namespace OOP_Domaci_Ilario.Wallet;
 
-using OOP_Domaci_Ilario.Asset;
-using OOP_Domaci_Ilario.Transaction;
+using Asset;
+using Transaction;
 
-public sealed class BitcoinWallet : Wallet
+public sealed class BitcoinWallet : Wallet, IFungibleWallet
 {
     public decimal ReturnTotalValueOfFungibleAssets(List<Asset> assets)
     {
-        var total = Decimal.Zero;
         if (assets.Count is 0)
         {
             return 0m;
         }
-        foreach (var item in base.FungibleAssetsBalance)
-        {
-            var assetValue = assets.Find(x => x.Address.Equals(item.Address)).Value;
-            if (assetValue is not 0m)
-            {
-                total += assetValue * item.Balance;
-            }
-        }
-        return total;
+
+        return (from item in FungibleAssetsBalance let assetValue = assets.Find(x => x.Address.Equals(item.Address)).Value where assetValue is not 0m select assetValue * item.Balance).Sum();
     }
 
-    private static int ReturnPercentageChangeInAllAssets(List<(Guid address, DateTime date, decimal value)> fungibleAssetPriceHistory)
+    private string ReturnPercentageChangeInAllAssets(List<Asset> assets, List<Transaction> fungibleAssetTransactions)
     {
-        return 0;
+        var percentage = 0m;
+        var currentValues = ReturnTotalValueOfFungibleAssets(assets);
+        if (fungibleAssetTransactions.Find(x => x.Sender.Equals(Address)) is null)
+        {
+            return "This wallet has not made any transactions!\n";
+        }
+        if(FungibleAssetsBalance.Count is 0)
+        {
+            return "This wallet dose not contain any assets!\n";
+        }
+
+        var previousValues = (from item in FungibleAssetsBalance 
+            select fungibleAssetTransactions.Where(x => x.Asset.Equals(item.Address)) 
+            into allAssetsTransactions select allAssetsTransactions.OrderBy(x => x.TransactionDate).Last() 
+            into asset select asset.AssetValue).Sum();
+
+        if (previousValues > currentValues)
+        {
+            percentage = (previousValues % currentValues) * 100;
+            return $"Total value of the wallet has dropped by {percentage}!\n";
+        }
+        percentage = (currentValues % previousValues) * 100;
+        return $"Total value of the wallet has increased by {percentage}!\n";
     }
 
     public override void PrintWallet(List<Asset> assets, List<Transaction> fungibleAssetTransactions)
     {
-        Console.WriteLine($"\n Type: Bitcoin \t Address: {base.Address} \n");
+        Console.WriteLine($"\nType: Bitcoin \t Address: {Address} \n");
         var totalValueOfAssets = ReturnTotalValueOfFungibleAssets(assets);
         Console.WriteLine(totalValueOfAssets is 0m
             ? "Total value of all assets: 0$ \n"
-            : $"Total value of all assets: {totalValueOfAssets}\n");
+            : $"Total value of all assets: {totalValueOfAssets} $\n");
+        Console.WriteLine(ReturnPercentageChangeInAllAssets(assets,fungibleAssetTransactions));
         if (assets.Count is 0)
         {
             Console.WriteLine("Wallet dose not have any assets\n");
@@ -49,25 +64,11 @@ public sealed class BitcoinWallet : Wallet
                 Console.WriteLine(assets.Find(x => x.Address.Equals(item.Address)).Name);
             }
         }
-        Console.WriteLine("Implement later\n");
-        //dodaj kasnijek kada skuzis kako
-        /*
-        else
-        {
-            foreach (var item in assets)
-            {
-                var lastRecord = assets.Where(x => x.Address.Equals(item.Address)).ToList().OrderBy(x => x.Value)
-                    .Last();
-                var firstNumber = Decimal.ToInt32(lastRecord.Value);
-                var secondNumber = Decimal.ToInt32(item.Value);
-                if (firstNumber > secondNumber)
-                {
-                    percentage = firstNumber - secondNumber;
-                    percentage %= firstNumber * 100;
-                    Console.WriteLine("Vale");
-                }
-            }
-        }
-        */
     }
+
+    public void AddFungibleAssetToList(FungibleAsset asset, int amount)
+    {
+        FungibleAssetsBalance.Add((asset.Address, amount));
+    }
+    
 }

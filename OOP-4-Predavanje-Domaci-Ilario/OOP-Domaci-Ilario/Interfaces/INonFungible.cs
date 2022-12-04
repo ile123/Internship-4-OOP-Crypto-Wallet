@@ -4,5 +4,5 @@ using OOP_Domaci_Ilario.Asset;
 
 public interface INonFungible
 {
-    decimal ReturnValue(Asset asset);
+    decimal ReturnValue(List<Asset> assets);
 }

@@ -2,10 +2,10 @@ using OOP_Domaci_Ilario.Interfaces;
 
 namespace OOP_Domaci_Ilario.Wallet;
 
-using OOP_Domaci_Ilario.Asset;
-using OOP_Domaci_Ilario.Transaction;
+using Asset;
+using Transaction;
 
-public sealed class SolanaWallet : Wallet
+public sealed class SolanaWallet : Wallet, IFungibleWallet, INonFungibleWallet
 {
     public List<Guid> AddressesOfOwnedNonFungibleAssets { get; set; }
 
@@ -14,18 +14,28 @@ public sealed class SolanaWallet : Wallet
         AddressesOfOwnedNonFungibleAssets = new List<Guid>();
     }
 
-    private decimal ReturnTotalValueOfFungibleAssets(List<Asset> assets)
+    public decimal ReturnTotalValueOfAssets(List<Asset> assets)
     {
-        return 0m;
+        var total = (from item in FungibleAssetsBalance let asset = assets.Find(x => x.Address.Equals(item.Address)) select item.Balance * asset.Value).Sum();
+
+        foreach (var asset in AddressesOfOwnedNonFungibleAssets.Select(item => assets.Find(x => x.Address.Equals(item))))
+        {
+            if (asset is INonFungible nonFungible)
+            {
+                total += nonFungible.ReturnValue(assets);
+            }
+        }
+        return total;
     }
 
     public override void PrintWallet(List<Asset> assets, List<Transaction> fungibleAssetTransactions)
     {
-        Console.WriteLine($"\n Type: Solana \t Address: {base.Address} \n");
-        var totalValueOfAssets = ReturnTotalValueOfFungibleAssets(assets);
+        Console.WriteLine($"\nType: Solana \t Address: {Address} \n");
+        var totalValueOfAssets = ReturnTotalValueOfAssets(assets);
         Console.WriteLine(totalValueOfAssets is 0m
             ? "Total value of all assets: 0$ \n"
-            : $"Total value of all assets: {totalValueOfAssets}\n");
+            : $"Total value of all assets: {totalValueOfAssets} $\n");
+        Console.WriteLine(ReturnPercentageChangeInAllAssets(assets,fungibleAssetTransactions));
         if (assets.Count is 0)
         {
             Console.WriteLine("Wallet dose not have any assets\n");
@@ -42,6 +52,57 @@ public sealed class SolanaWallet : Wallet
                 Console.WriteLine(assets.Find(x => x.Address.Equals(item)).Name);
             }
         }
-        Console.WriteLine("Implement later\n");
     }
+    
+    private string ReturnPercentageChangeInAllAssets(List<Asset> assets, List<Transaction> fungibleAssetTransactions)
+    {
+        var percentage = 0m;
+        var previousValuesFungible = 0m;
+        var previousValuesNonFungible = 0m;
+        var currentValues = ReturnTotalValueOfAssets(assets);
+        if (base.FungibleAssetsBalance.Count is 0)
+        {
+            return "This wallet dose not contain any assets!\n";
+        }
+        if (fungibleAssetTransactions.Count is 0)
+        {
+            return "There is no previous transactions related to this wallet!\n";
+        }
+
+        if (FungibleAssetsBalance.Count is not 0)
+        {
+            previousValuesFungible = (from item in FungibleAssetsBalance 
+                select fungibleAssetTransactions.Where(x => x.Asset.Equals(item.Address)) 
+                into allAssetsTransactions select allAssetsTransactions.OrderBy(x => x.TransactionDate).Last() 
+                into asset select asset.AssetValue).Sum();
+        }
+
+        if (AddressesOfOwnedNonFungibleAssets.Count is not 0)
+        {
+            previousValuesNonFungible = (from item in AddressesOfOwnedNonFungibleAssets 
+                let nonFungibleAssetTransaction = fungibleAssetTransactions.Where(x => x.Asset.Equals(item)) 
+                let nonFungibleAsset = nonFungibleAssetTransaction.OrderBy(x => x.TransactionDate).Last() 
+                select nonFungibleAsset.AssetValue * assets.Find(x => x.Address.Equals(item)).Value).Sum();
+        }
+        var previousValues = previousValuesFungible + previousValuesNonFungible;
+
+        if (previousValues > currentValues)
+        {
+            percentage = (previousValues % currentValues) * 100;
+            return $"Total value of the wallet has dropped by {percentage}!\n";
+        }
+        percentage = (currentValues % previousValues) * 100;
+        return $"Total value of the wallet has increased by {percentage}!\n";
+    }
+    
+    public void AddFungibleAssetToList(FungibleAsset asset, int amount)
+    {
+        base.FungibleAssetsBalance.Add((asset.Address, amount));
+    }
+
+    public void AddNonFungibleAssetToList(NonFungibleAsset asset)
+    {
+        AddressesOfOwnedNonFungibleAssets.Add(asset.Address);
+    }
+    
 }

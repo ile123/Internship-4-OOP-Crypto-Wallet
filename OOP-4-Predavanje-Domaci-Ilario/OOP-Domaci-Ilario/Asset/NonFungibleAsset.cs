@@ -16,8 +16,15 @@ public sealed class NonFungibleAsset : Asset, INonFungible
         _supportedFungibleAssetAddress = supportedFungibleAssetAddress;
     }
 
-    public decimal ReturnValue(Asset asset)
+    public decimal ReturnValue(List<Asset> assets)
     {
-        return base.Value * asset.Value;
+        var value = 0m;
+        var assetValue = assets.Find(x => x.Address.Equals(FungibleAssetAddress)).Value;
+        if (assetValue is 0m)
+        {
+            return 0m;
+        }
+        value += base.Value * assetValue;
+        return value;
     }
 }

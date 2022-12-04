@@ -32,8 +32,6 @@ var assets = new List<Asset>()
 
 var transactions = new List<Transaction>();
 
-var fungibleAssetPriceHistory = new List<(Guid address, DateTime date, decimal value)>();
-
 void AppendNonFungibleAssets()
 {
     var assetAddress = assets[1].Address;
@@ -173,6 +171,36 @@ void PrintAccessWalletMenu()
     Console.WriteLine("\n Please choose what you want to do with the wallet: \n 1 - Access portfolio \n 2 - Transfer assets \n 3 - History of transactions \n 4 - Cancel transaction \n 5 - Return to previous menu \n");
 }
 
+void PrintPortfolio(Wallet wallet)
+{
+    if (wallet is BitcoinWallet temp)
+    {
+        Console.WriteLine($"Total balance of the wallet: {temp.ReturnTotalValueOfFungibleAssets(assets)} \n");
+        Console.WriteLine("Fungible assets: \n");
+        var allFungibleAssets = new List<Asset>();
+        //finish later
+        foreach (var item in temp.FungibleAssetsBalance)
+        {
+            allFungibleAssets.AddRange(assets.Where(x => x.Address.Equals(item.Address)));
+        }
+    }
+}
+
+void TransferAsset(Wallet wallet)
+{
+    
+}
+
+void PrintHistoryOfTransactions(Wallet wallet)
+{
+    
+}
+
+void CancelTransaction(Wallet wallet)
+{
+    
+}
+
 void CreateNewWallet()
 {
     Console.Clear();
@@ -202,7 +230,7 @@ void CreateNewWallet()
                 break;
         }
 
-        if (flag is true)
+        if (flag)
         {
             break;
         }
@@ -224,20 +252,61 @@ void AccessWallet()
     Console.Clear();
     PrintAllWallets();
     Console.WriteLine("\n Enter which wallet you want to access: \n");
-    var input = Guid.Parse(Console.ReadLine() ?? string.Empty);
-    if (wallets.Find(x => x.Address.Equals(input)) is null)
+    var walletAddress = Guid.Parse(Console.ReadLine() ?? string.Empty);
+    var address = walletAddress;
+    if (wallets.Find(x => x.Address.Equals(address)) is null)
     {
         while (true)
         {
             Console.WriteLine("\n Previous address invalid! Please enter again! \n");
-            input = Guid.Parse(Console.ReadLine() ?? string.Empty);
-            if (wallets.Find(x => x.Address.Equals(input)) is not null)
+            walletAddress = Guid.Parse(Console.ReadLine() ?? string.Empty);
+            var address1 = walletAddress;
+            if (wallets.Find(x => x.Address.Equals(address1)) is not null)
             {
                 break;
             }
         }
     }
-    var wallet = wallets.Find(x => x.Address.Equals(input));
+    var wallet = wallets.Find(x => x.Address.Equals(walletAddress));
+    PrintAccessWalletMenu();
+    Console.WriteLine("\n Please select an option: \n");
+    var input = Console.ReadLine();
+    var flag = false;
+    while (true)
+    {
+        switch (input)
+        {
+            case "1":
+                PrintPortfolio(wallet);
+                flag = true;
+                break;
+            case "2":
+                TransferAsset(wallet);
+                flag = true;
+                break;
+            case "3":
+                PrintHistoryOfTransactions(wallet);
+                flag = true;
+                break;
+            case "4":
+                CancelTransaction(wallet);
+                flag = true;
+                break;
+            case "5":
+                flag = true;
+                break;
+            default:
+                Console.WriteLine("\n ERROR: Wrong input given! Try Again!\n");
+                input = Console.ReadLine();
+                break;
+        }
+
+        if (flag)
+        {
+            break;
+        }
+    }
+    Console.Clear();
 }
 
 void Start()
@@ -266,11 +335,9 @@ void Start()
                 break;
         }
 
-        if (flag is true)
-        {
-            Console.WriteLine("\n \n Exiting app! \n \n");
-            break;
-        }
+        if (!flag) continue;
+        Console.WriteLine("\n \n Exiting app! \n \n");
+        break;
     }
 }
 
