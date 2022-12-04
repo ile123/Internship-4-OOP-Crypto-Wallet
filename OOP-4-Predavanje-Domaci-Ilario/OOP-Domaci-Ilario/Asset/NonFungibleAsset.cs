@@ -1,6 +1,8 @@
+using OOP_Domaci_Ilario.Interfaces;
+
 namespace OOP_Domaci_Ilario.Asset;
 
-public sealed class NonFungibleAsset : Asset
+public sealed class NonFungibleAsset : Asset, INonFungible
 {
     private readonly Guid _supportedFungibleAssetAddress;
 
@@ -13,5 +15,9 @@ public sealed class NonFungibleAsset : Asset
     {
         _supportedFungibleAssetAddress = supportedFungibleAssetAddress;
     }
-    
+
+    public decimal ReturnValue(Asset asset)
+    {
+        return base.Value * asset.Value;
+    }
 }

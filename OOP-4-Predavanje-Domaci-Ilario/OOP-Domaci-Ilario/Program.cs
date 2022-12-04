@@ -168,6 +168,11 @@ void PrintMenu()
     Console.WriteLine("\n 1 - Create wallet \n 2 - Access wallet \n 3 - Exit app \n \n Enter one of the specified values");
 }
 
+void PrintAccessWalletMenu()
+{
+    Console.WriteLine("\n Please choose what you want to do with the wallet: \n 1 - Access portfolio \n 2 - Transfer assets \n 3 - History of transactions \n 4 - Cancel transaction \n 5 - Return to previous menu \n");
+}
+
 void CreateNewWallet()
 {
     Console.Clear();
@@ -210,14 +215,29 @@ void PrintAllWallets()
     Console.WriteLine("\n \n All currently existing wallets: \n \n");
     foreach (var item in wallets)
     {
-        Console.WriteLine(item.Address);
+        item.PrintWallet(assets, transactions);
     }
 }
 
 void AccessWallet()
 {
     Console.Clear();
-    
+    PrintAllWallets();
+    Console.WriteLine("\n Enter which wallet you want to access: \n");
+    var input = Guid.Parse(Console.ReadLine() ?? string.Empty);
+    if (wallets.Find(x => x.Address.Equals(input)) is null)
+    {
+        while (true)
+        {
+            Console.WriteLine("\n Previous address invalid! Please enter again! \n");
+            input = Guid.Parse(Console.ReadLine() ?? string.Empty);
+            if (wallets.Find(x => x.Address.Equals(input)) is not null)
+            {
+                break;
+            }
+        }
+    }
+    var wallet = wallets.Find(x => x.Address.Equals(input));
 }
 
 void Start()

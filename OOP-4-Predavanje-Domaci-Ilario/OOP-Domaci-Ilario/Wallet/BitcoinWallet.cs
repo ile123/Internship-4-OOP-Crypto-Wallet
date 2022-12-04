@@ -5,7 +5,7 @@ namespace OOP_Domaci_Ilario.Wallet;
 using OOP_Domaci_Ilario.Asset;
 using OOP_Domaci_Ilario.Transaction;
 
-public sealed class BitcoinWallet : Wallet, IFungible
+public sealed class BitcoinWallet : Wallet
 {
     public decimal ReturnTotalValueOfFungibleAssets(List<Asset> assets)
     {
@@ -30,7 +30,7 @@ public sealed class BitcoinWallet : Wallet, IFungible
         return 0;
     }
 
-    public override void PrintWallet(List<Asset> assets, List<(Guid address, DateTime date, decimal value)> fungibleAssetPriceHistory)
+    public override void PrintWallet(List<Asset> assets, List<Transaction> fungibleAssetTransactions)
     {
         Console.WriteLine($"\n Type: Bitcoin \t Address: {base.Address} \n");
         var totalValueOfAssets = ReturnTotalValueOfFungibleAssets(assets);
@@ -44,9 +44,9 @@ public sealed class BitcoinWallet : Wallet, IFungible
         else
         {
             Console.WriteLine("Assets that the wallet has: \n");
-            foreach (var item in assets)
+            foreach (var item in FungibleAssetsBalance)
             {
-                Console.WriteLine(item.Name);
+                Console.WriteLine(assets.Find(x => x.Address.Equals(item.Address)).Name);
             }
         }
         Console.WriteLine("Implement later\n");

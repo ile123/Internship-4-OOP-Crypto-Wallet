@@ -7,7 +7,8 @@ public abstract class Transaction
     private readonly DateTime _transactionDate;
     private readonly Guid _senderWallet;
     private readonly Guid _receiverWallet;
-    private bool _isCancelled;
+    public decimal AssetValue { get; set; }
+    public bool IsCancelled { get; set; }
 
     public Guid Id
     {
@@ -34,12 +35,6 @@ public abstract class Transaction
         get { return _receiverWallet; }
     }
 
-    public bool IsCancelled
-    {
-        get { return _isCancelled; }
-        set { _isCancelled = value; }
-    }
-    
     protected Transaction(Guid assetAddress, Guid senderWallet, Guid receiverWallet)
     {
         _id = Guid.NewGuid();
@@ -47,7 +42,7 @@ public abstract class Transaction
         _transactionDate = DateTime.Now;
         _senderWallet = senderWallet;
         _receiverWallet = receiverWallet;
-        _isCancelled = false;
+        IsCancelled = false;
     }
     
 }

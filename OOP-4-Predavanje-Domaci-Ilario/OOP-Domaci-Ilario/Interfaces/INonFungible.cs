@@ -4,7 +4,5 @@ using OOP_Domaci_Ilario.Asset;
 
 public interface INonFungible
 {
-    //public List<Guid> OwnedNonFungibleAssets { get; set; }
-
-    decimal ReturnTotalValueOfNonFungibleAssets(List<Asset> assets);
+    decimal ReturnValue(Asset asset);
 }
