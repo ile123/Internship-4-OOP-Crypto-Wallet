@@ -1,8 +1,11 @@
 namespace OOP_Domaci_Ilario.Interfaces;
 
-using OOP_Domaci_Ilario.Asset;
+using Transaction;
 
 public interface IFungible
 {
     decimal ReturnValue();
+
+    decimal ReturnPreviousValue(List<Transaction> transactions);
+
 }

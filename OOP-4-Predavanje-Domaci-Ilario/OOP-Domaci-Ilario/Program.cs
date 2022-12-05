@@ -1,5 +1,6 @@
 ﻿
 using OOP_Domaci_Ilario.Asset;
+using OOP_Domaci_Ilario.Interfaces;
 using OOP_Domaci_Ilario.Transaction;
 using OOP_Domaci_Ilario.Wallet;
 
@@ -171,19 +172,147 @@ void PrintAccessWalletMenu()
     Console.WriteLine("\n Please choose what you want to do with the wallet: \n 1 - Access portfolio \n 2 - Transfer assets \n 3 - History of transactions \n 4 - Cancel transaction \n 5 - Return to previous menu \n");
 }
 
-void PrintPortfolio(Wallet wallet)
+void PrintBitcoinWallet(BitcoinWallet bitWallet)
 {
-    if (wallet is BitcoinWallet temp)
+    Console.WriteLine($"Total balance of the wallet: {bitWallet.ReturnTotalValueOfFungibleAssets(assets)} \n");
+    Console.WriteLine("Fungible assets: \n");
+    var allFungibleAssets = bitWallet.FungibleAssetsBalance
+        .Select(item => assets.Find(x => x.Address.Equals(item.Address))).ToList();
+        
+    foreach (var fungibleAsset in allFungibleAssets.Select(item => item as FungibleAsset))
     {
-        Console.WriteLine($"Total balance of the wallet: {temp.ReturnTotalValueOfFungibleAssets(assets)} \n");
-        Console.WriteLine("Fungible assets: \n");
-        var allFungibleAssets = new List<Asset>();
-        //finish later
-        foreach (var item in temp.FungibleAssetsBalance)
+        if (fungibleAsset is null) continue;
+        var fungibleAssetBalance = bitWallet.FungibleAssetsBalance.Find(x => x.Address == fungibleAsset.Address)
+            .Balance;
+        Console.WriteLine($"Address: {fungibleAsset.Address} \n Name: {fungibleAsset.Name} \n Label: {fungibleAsset.Label} \n " +
+                          $"Balance: {fungibleAssetBalance} \n Value: {fungibleAsset.Value} \n");
+        if (fungibleAsset.ReturnPreviousValue(transactions) is 0m)
         {
-            allFungibleAssets.AddRange(assets.Where(x => x.Address.Equals(item.Address)));
+            Console.WriteLine("\n Asset has no previous changes to its values! \n");
+        }
+        else
+        {
+            var previousValue = fungibleAsset.ReturnPreviousValue(transactions);
+            Console.WriteLine(previousValue > fungibleAsset.Value
+                ? $"\n Asset value ha dropped by: {(previousValue - fungibleAsset.Value) / 100} % \n"
+                : $"\n Asset value ha increased by: {(fungibleAsset.Value - previousValue) / 100} % \n");
         }
     }
+}
+
+void PrintEthereumWallet(EthereumWallet ethWallet)
+{
+    Console.WriteLine($"Total balance of the wallet: {ethWallet.ReturnTotalValueOfAssets(assets)} \n");
+    Console.WriteLine("Fungible assets: \n");
+    var allFungibleAssets = ethWallet.FungibleAssetsBalance
+        .Select(item => assets.Find(x => x.Address.Equals(item.Address))).ToList();
+        
+    foreach (var fungibleAsset in allFungibleAssets.Select(item => item as FungibleAsset))
+    {
+        if (fungibleAsset is null) continue;
+        var fungibleAssetBalance = ethWallet.FungibleAssetsBalance.Find(x => x.Address == fungibleAsset.Address)
+            .Balance;
+        Console.WriteLine($"Address: {fungibleAsset.Address} \n Name: {fungibleAsset.Name} \n Label: {fungibleAsset.Label} \n " +
+                          $"Balance: {fungibleAssetBalance} \n Value: {fungibleAsset.Value} \n");
+        if (fungibleAsset.ReturnPreviousValue(transactions) is 0m)
+        {
+            Console.WriteLine("\n Asset has no previous changes to its values! \n");
+        }
+        else
+        {
+            var previousValue = fungibleAsset.ReturnPreviousValue(transactions);
+            Console.WriteLine(previousValue > fungibleAsset.Value
+                ? $"\n Asset value ha dropped by: {(previousValue - fungibleAsset.Value) / 100} % \n"
+                : $"\n Asset value ha increased by: {(fungibleAsset.Value - previousValue) / 100} % \n");
+        }
+    }
+    var allNonFungibleAssets = ethWallet.AddressesOfOwnedNonFungibleAssets
+        .Select(item => assets.Find(x => x.Address.Equals(item))).ToList();
+    foreach (var nonFungibleAsset in allNonFungibleAssets.Select(item => item as NonFungibleAsset))
+    {
+        if (nonFungibleAsset is null) continue;
+        var fungibleAssetValue = assets.Find(x => x.Address == nonFungibleAsset.FungibleAssetAddress).Value;
+        Console.WriteLine($"Address: {nonFungibleAsset.Address} \n Name: {nonFungibleAsset.Name} \n " +
+                          $"Fungible asset value: {fungibleAssetValue} \n Value: {nonFungibleAsset.Value} \n");
+        if (nonFungibleAsset.ReturnPreviousValue(transactions, assets) is 0m)
+        {
+            Console.WriteLine("\n Asset has no previous changes to its values! \n");
+        }
+        else
+        {
+            var previousValue = nonFungibleAsset.ReturnPreviousValue(transactions, assets);
+            Console.WriteLine(previousValue > nonFungibleAsset.ReturnValue(assets)
+                ? $"\n Asset value ha dropped by: {(previousValue - nonFungibleAsset.ReturnValue(assets)) / 100} % \n"
+                : $"\n Asset value ha increased by: {(nonFungibleAsset.ReturnValue(assets) - previousValue) / 100} % \n");
+        }
+    }
+}
+
+void PrintSolanaWallet(SolanaWallet solWallet)
+{
+    Console.WriteLine($"Total balance of the wallet: {solWallet.ReturnTotalValueOfAssets(assets)} \n");
+    Console.WriteLine("Fungible assets: \n");
+    var allFungibleAssets = solWallet.FungibleAssetsBalance
+        .Select(item => assets.Find(x => x.Address.Equals(item.Address))).ToList();
+        
+    foreach (var fungibleAsset in allFungibleAssets.Select(item => item as FungibleAsset))
+    {
+        if (fungibleAsset is null) continue;
+        var fungibleAssetBalance = solWallet.FungibleAssetsBalance.Find(x => x.Address == fungibleAsset.Address)
+            .Balance;
+        Console.WriteLine($"Address: {fungibleAsset.Address} \n Name: {fungibleAsset.Name} \n Label: {fungibleAsset.Label} \n " +
+                          $"Balance: {fungibleAssetBalance} \n Value: {fungibleAsset.Value} \n");
+        if (fungibleAsset.ReturnPreviousValue(transactions) is 0m)
+        {
+            Console.WriteLine("\n Asset has no previous changes to its values! \n");
+        }
+        else
+        {
+            var previousValue = fungibleAsset.ReturnPreviousValue(transactions);
+            Console.WriteLine(previousValue > fungibleAsset.Value
+                ? $"\n Asset value ha dropped by: {(previousValue - fungibleAsset.Value) / 100} % \n"
+                : $"\n Asset value ha increased by: {(fungibleAsset.Value - previousValue) / 100} % \n");
+        }
+    }
+    var allNonFungibleAssets = solWallet.AddressesOfOwnedNonFungibleAssets
+        .Select(item => assets.Find(x => x.Address.Equals(item))).ToList();
+    foreach (var nonFungibleAsset in allNonFungibleAssets.Select(item => item as NonFungibleAsset))
+    {
+        if (nonFungibleAsset is null) continue;
+        var fungibleAssetValue = assets.Find(x => x.Address == nonFungibleAsset.FungibleAssetAddress).Value;
+        Console.WriteLine($"Address: {nonFungibleAsset.Address} \n Name: {nonFungibleAsset.Name} \n " +
+                          $"Fungible asset value: {fungibleAssetValue} \n Value: {nonFungibleAsset.Value} \n");
+        if (nonFungibleAsset.ReturnPreviousValue(transactions, assets) is 0m)
+        {
+            Console.WriteLine("\n Asset has no previous changes to its values! \n");
+        }
+        else
+        {
+            var previousValue = nonFungibleAsset.ReturnPreviousValue(transactions, assets);
+            Console.WriteLine(previousValue > nonFungibleAsset.ReturnValue(assets)
+                ? $"\n Asset value ha dropped by: {(previousValue - nonFungibleAsset.ReturnValue(assets)) / 100} % \n"
+                : $"\n Asset value ha increased by: {(nonFungibleAsset.ReturnValue(assets) - previousValue) / 100} % \n");
+        }
+    }
+}
+
+void PrintPortfolio(Wallet wallet)
+{
+    if (wallet is BitcoinWallet bitWallet)
+    {
+        PrintBitcoinWallet(bitWallet);
+    }
+
+    if (wallet is EthereumWallet ethWallet)
+    {
+        PrintEthereumWallet(ethWallet);
+    }
+
+    if (wallet is SolanaWallet solWallet)
+    {
+        PrintSolanaWallet(solWallet);
+    }
+    Thread.Sleep(4000);
 }
 
 void TransferAsset(Wallet wallet)
@@ -246,7 +375,7 @@ void PrintAllWallets()
         item.PrintWallet(assets, transactions);
     }
 }
-
+//Bilo bi pametno da unos walleta prebacis u zasebnu funkciju
 void AccessWallet()
 {
     Console.Clear();

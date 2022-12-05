@@ -2,24 +2,36 @@ using OOP_Domaci_Ilario.Interfaces;
 
 namespace OOP_Domaci_Ilario.Asset;
 
+using Transaction;
+
 public sealed class FungibleAsset : Asset, IFungible
 {
-    private string _label;
-
-    public string Label
-    {
-        get { return _label; }
-        set { _label = value; }
-    }
+    public string Label { get; set; }
 
     public FungibleAsset(string name, decimal value, string label) : base(name, value)
     {
-        _label = label;
+        Label = label;
     }
 
     public decimal ReturnValue()
     {
         return base.Value;
+    }
+
+    public decimal ReturnPreviousValue(List<Transaction> transactions)
+    {
+        if (transactions.Count is 0)
+        {
+            return 0m;
+        }
+
+        if (transactions.Find(x => x.Asset == Address) is null)
+        {
+            return 0m;
+        }
+        var assetValue = transactions.Where(item => item.Asset == Address)
+            .OrderBy(x => x.TransactionDate).Last().AssetValue;
+        return assetValue;
     }
 
 }
